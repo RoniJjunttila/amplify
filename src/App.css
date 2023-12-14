@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+.ranking{
+
+  margin-right: 150px;
+}
+
+.datatable {
+  display: flex;
+  height: fit-content;
+}
