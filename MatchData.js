@@ -14,7 +14,7 @@ const PlayerInfo = () => {
       const matchResponse = await fetch(`https://api.pubg.com/shards/steam/matches/${matchId}`, {
         headers: {
           'Authorization': `Bearer ${PUBG_API_KEY}`,
-          'Accept': 'application/vnd.api+json'
+          'Accept': 'application/vnd.api+json',
         }
       });
 
