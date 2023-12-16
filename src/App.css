@@ -45,3 +45,13 @@
   display: flex;
   height: fit-content;
 }
+
+.buttonlink {
+    background: none;
+    border: none;
+    padding: 0;
+    text-decoration: underline;
+    cursor: pointer;
+    color: blue;
+
+}

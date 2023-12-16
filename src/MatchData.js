@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import PlayerData from "./Modal";
 
-
+//viimeiset kymmenen peliä linkkin alle, tapot, sijotus, damage,
+//graph jossa ois pelien trendi
 //jakaa koodia
+//error niin käytä toista avainta
 //https://github.com/pubg/api-assets/blob/master/dictionaries/telemetry/mapName.json telemetry data käännettynä
 
-const PUBG_API_KEY =
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZTZhMjM4MC01YjkwLTAxM2ItOTg2Ny0wMzFhMzJiYjRkNTMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjcwNzY5OTUxLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6Im5pZ2hib3Qtc3RhdHMifQ.PubdgdyNbB2i6GZfpNQO8zflo050se4cNvpOGM2VxIE "; // Insert your PUBG API key here
+const PUBG_API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZTZhMjM4MC01YjkwLTAxM2ItOTg2Ny0wMzFhMzJiYjRkNTMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjcwNzY5OTUxLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6Im5pZ2hib3Qtc3RhdHMifQ.PubdgdyNbB2i6GZfpNQO8zflo050se4cNvpOGM2VxIE ";
+const PUBG_API_KEY_2 = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzZTU2YTQ0MC03ZTNlLTAxM2MtMmZlYy0zZTQ5OWY3OWEzZGEiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNzAyNzMwNDQwLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InByaXZhdGUtdXNlLXN0In0.mx__XYP8I1wTPR2JbKIUbccutTyHL0nX8USCGjMp3_8";
 
 const PlayerInfo = () => {
   const [playerData, setPlayerData] = useState(null);
@@ -15,9 +17,7 @@ const PlayerInfo = () => {
   const [matchData, setMatchData] = useState(null);
   const [selectedGame, setSeletedGame] = useState(0);
   const [selectedPlayer, setSeletedPlayer] = useState(0);
-  const [victimArray, setVictimArray] = useState([]);
   const [attackerArray, setAttackerArray] = useState([]);
-  const [lastTeamId, setLastTeamId] = useState(true);
   const playerNames = [
     "E1_Duderino",
     "MunatonEpaemies",
@@ -242,7 +242,9 @@ const PlayerInfo = () => {
     "WeapVector_C": "Vector",
     "WeapWin94_C": "Win94",
     "WeapWinchester_C": "S1897",
-    "Weapvz61Skorpion_C": "Skorpion"
+    "Weapvz61Skorpion_C": "Skorpion",
+    "WeapDragunov_C": "Metanov",
+    "WeapJS9_C": "JS9"
   }
 
   const [currentMapName, setCurrentMapName] = useState(null);
@@ -293,7 +295,7 @@ const PlayerInfo = () => {
             `https://api.pubg.com/shards/steam/matches/${matchId}`,
             {
               headers: {
-                Authorization: `Bearer ${PUBG_API_KEY}`,
+                Authorization: `Bearer ${PUBG_API_KEY_2}`,
                 Accept: "application/vnd.api+json",
               },
             }
@@ -494,14 +496,7 @@ const PlayerInfo = () => {
                                       <td>
                                         {player.name ? (
                                           <button
-                                            style={{
-                                              background: "none",
-                                              border: "none",
-                                              padding: "0",
-                                              textDecoration: "underline",
-                                              cursor: "pointer",
-                                              color: "blue",
-                                            }}
+                                            className="buttonlink"
                                             onClick={() => {
                                               openModal();
                                               setSeasonDataPlayer(player.name);
@@ -559,23 +554,38 @@ const PlayerInfo = () => {
                 <tbody>
                   {combinedArrayData.map((data, index) => (
                     <tr key={index}>
-                      <td>{data.attacker ? data.attacker.name : data.name}</td>
+                      <td><button 
+                            className="buttonlink"
+                            onClick={() => {
+                            openModal();
+                            setSeasonDataPlayer(data.attacker ? data.attacker.name : data.name);
+                          }}>
+                            {data.attacker ? data.attacker.name : data.name}
+                          </button>
+                      </td>
                       <td>
                         {Math.round(
                           data.attacker ? data.attacker.health : data.health
                         )}
                       </td>
-                      <td>{damageCauser[data.damageCauserName]}</td>
+                      <td>{damageCauser[data.damageCauserName] ? damageCauser[data.damageCauserName] : data.damageCauserName}</td>
                       <td>{data.damageReason}</td>
                       <td>
-                        {data.victim ? data.victim.name : data.attacker.name}
+                        <button 
+                          className="buttonlink"
+                          onClick={() => {
+                          openModal();
+                          setAttackerArray(data.victim ? data.victim.name : data.attacker.name);
+                        }}>
+                           {data.victim ? data.victim.name : data.attacker.name}
+                        </button>
                       </td>
                       <td>{Math.round(data.damage)}</td>
                       <td>{
-                        Math.round(data.victim.health) == 0 ? "knock" : 
+                        Math.round(data.victim.health) === 0 ? "knock" : 
                         data.victim
                           ? `${Math.round(data.victim.health)} to ${
-                              Math.round(data.victim.health - data.damage) == 0
+                              Math.round(data.victim.health - data.damage) === 0
                                 ? "knock"
                                 : Math.round(data.victim.health - data.damage)
                             }`
