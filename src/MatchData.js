@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import PlayerData from "./Modal";
-
+import "./matchData.css";
 //viimeiset kymmenen peliä linkkin alle, tapot, sijotus, damage,
 //graph jossa ois pelien trendi
 //jakaa koodia
@@ -21,7 +21,7 @@ const PlayerInfo = () => {
   const [attackerArray, setAttackerArray] = useState([]);
   const playerNames = [
     "E1_Duderino",
-    "MunatonEpaemies",
+    "keken_viikset",
     "HlGHLANDER",
     "bold_moves_bob",
   ];
@@ -185,7 +185,7 @@ const PlayerInfo = () => {
     WeapAWM_C: "AWM",
     WeapBerreta686_C: "S686",
     WeapBerylM762_C: "Beryl",
-    WeapBizonPP19_C: "Bizon",
+    WeapBizonPP19_C: "Beast son(bizon)",
     WeapCowbarProjectile_C: "Crowbar Projectile",
     WeapCowbar_C: "Crowbar",
     WeapCrossbow_1_C: "Crossbow",
@@ -245,14 +245,16 @@ const PlayerInfo = () => {
     Weapvz61Skorpion_C: "Skorpion",
     WeapDragunov_C: "Metanov",
     WeapJS9_C: "JS9",
+    WeapFamasG2_C: "Famas",
   };
   let teamRank = 0;
   const [currentMapName, setCurrentMapName] = useState(null);
   const [loading, setLoading] = useState(false);
   const [combinedArrayData, SetCombinedArrayData] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [SeasonDataPlayer, setSeasonDataPlayer] = useState("E1_Duderino");
-  const openModal = () => {
+  const [SeasonDataPlayer, setSeasonDataPlayer] = useState("");
+  const openModal = (val) => {
+    setSeasonDataPlayer(val)
     setModalIsOpen(true);
   };
 
@@ -332,7 +334,9 @@ const PlayerInfo = () => {
             });
           });
 
-          matchData.included = matchData.included.filter((item) => item.type !== "roster");
+          matchData.included = matchData.included.filter(
+            (item) => item.type !== "roster"
+          );
 
           console.log(matchData);
 
@@ -423,29 +427,33 @@ const PlayerInfo = () => {
 
   return (
     <div className="content">
-      <div>
-        <label>
-          Map: {currentMapName}
-          <br></br>
-        </label>
-        <label>Games:</label>
-        <select onChange={(event) => setSeletedGame(event.target.value)}>
-          {matchesArray.map((key, id) => (
-            <option key={id} value={id}>
-              {key}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label>Player: </label>
-        <select onChange={(event) => setSeletedPlayer(event.target.value)}>
-          {playerNames.map((key, id) => (
-            <option key={key} value={id}>
-              {key}
-            </option>
-          ))}
-        </select>
+      <div className="selector">
+        <div className="selector-item">
+          <label>
+            Map: {currentMapName}
+            <br></br>
+          </label>
+        </div>
+        <div className="selector-item">
+          <label>Games:</label>
+          <select onChange={(event) => setSeletedGame(event.target.value)}>
+            {matchesArray.map((key, id) => (
+              <option key={id} value={id}>
+                {key}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="selector-item">
+          <label>Player: </label>
+          <select onChange={(event) => setSeletedPlayer(event.target.value)}>
+            {playerNames.map((key, id) => (
+              <option key={key} value={id}>
+                {key}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       {matchData ? (
         <div className="datatable">
@@ -469,7 +477,7 @@ const PlayerInfo = () => {
                     const winPlaceB = b.attributes.stats.rank || 0;
                     return winPlaceA - winPlaceB;
                   })
-                  
+
                   .reduce((acc, participant) => {
                     const stats = participant.attributes.stats || {};
                     const {
@@ -510,73 +518,76 @@ const PlayerInfo = () => {
                     }
                     return acc;
                   }, [])
-                  
+
                   .map((team, teamIndex) => {
                     return (
                       <React.Fragment key={teamIndex}>
                         {team.map((player, index) => {
-                          if(player.name !== "undefined") {
+                          if (player.name !== "undefined") {
+                            const currentTeamId = player.teamId;
+                            const previousTeamId =
+                              index > 0 ? team[index - 1].teamId : false;
 
-                          const currentTeamId = player.teamId;
-                          const previousTeamId =
-                            index > 0 ? team[index - 1].teamId : false;
-                            
-                          const teamIdChanged =
-                            currentTeamId !== previousTeamId || previousTeamId == false;
+                            const teamIdChanged =
+                              currentTeamId !== previousTeamId ||
+                              previousTeamId == false;
 
-                          const isPlayerNameNotEmpty =
-                            player.name && player.name.trim() !== "";
+                            const isPlayerNameNotEmpty =
+                              player.name && player.name.trim() !== "";
 
-                          return (
-                            <React.Fragment key={`${teamIndex}_${index}`}>
-                              {isPlayerNameNotEmpty && (
-                                <React.Fragment>
-                                  {teamIdChanged && (
-                                    <tr>
-                                      <td colSpan="5">
-                                        ---------------------------------------------------
-                                      </td>
-                                    </tr>
-                                  )}
-                                  <tr>
-                                    {player.name === "E1_Duderino" ||
-                                    player.name === "keken_viikset" ||
-                                    player.name === "HlGHLANDER" ||
-                                    player.name === "bold_moves_bob" ? (
-                                      <td style={{ fontWeight: "bold" }}>
-                                        {player.name}
-                                      </td>
-                                    ) : (
-                                      <td>
-                                        {player.name ? (
-                                          <button
-                                            className="buttonlink"
-                                            onClick={() => {
-                                              openModal();
-                                              setSeasonDataPlayer(player.name);
-                                            }}
-                                          >
-                                            {player.name}
-                                          </button>
-                                        ) : (
-                                          ""
-                                        )}
-                                      </td>
+                            return (
+                              <React.Fragment key={`${teamIndex}_${index}`}>
+                                {isPlayerNameNotEmpty && (
+                                  <React.Fragment>
+                                    {teamIdChanged && (
+                                      <tr>
+                                        <td colSpan="5">
+                                          Team {currentTeamId}
+                                        </td>
+                                      </tr>
                                     )}
-                                    <td>{player.kills}</td>
-                                    <td>{player.assists}</td>
-                                    <td>
-                                      {!isNaN(Math.round(player.damageDealt))
-                                        ? Math.round(player.damageDealt)
-                                        : ""}
-                                    </td>
-                                    <td>{teamRank}</td>
-                                  </tr>
-                                </React.Fragment>
-                              )}
-                            </React.Fragment>
-                          );
-                        }}, teamRank++)}
+                                    <tr>
+                                      {player.name === "E1_Duderino" ||
+                                      player.name === "keken_viikset" ||
+                                      player.name === "HlGHLANDER" ||
+                                      player.name === "bold_moves_bob" ? (
+                                        <td style={{ fontWeight: "bold" }}>
+                                          {player.name}
+                                        </td>
+                                      ) : (
+                                        <td>
+                                          {player.name ? (
+                                            <button
+                                              className="buttonlink"
+                                              onClick={() => {
+                                                  setSeasonDataPlayer(
+                                                  player.name
+                                                );
+                                                openModal(player.name);
+                                              }}
+                                            >
+                                              {player.name}
+                                            </button>
+                                          ) : (
+                                            ""
+                                          )}
+                                        </td>
+                                      )}
+                                      <td>{player.kills}</td>
+                                      <td>{player.assists}</td>
+                                      <td>
+                                        {!isNaN(Math.round(player.damageDealt))
+                                          ? Math.round(player.damageDealt)
+                                          : ""}
+                                      </td>
+                                      <td>{teamRank}</td>
+                                    </tr>
+                                  </React.Fragment>
+                                )}
+                              </React.Fragment>
+                            );
+                          }
+                        }, teamRank++)}
                       </React.Fragment>
                     );
                   })}
@@ -592,7 +603,7 @@ const PlayerInfo = () => {
           {combinedArrayData.length > 0 && (
             <div className="datatable">
               <table>
-                <caption>Damage data:</caption>
+                <caption>Match damage data:</caption>
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -612,10 +623,7 @@ const PlayerInfo = () => {
                         <button
                           className="buttonlink"
                           onClick={() => {
-                            openModal();
-                            setSeasonDataPlayer(
-                              data.attacker ? data.attacker.name : data.name
-                            );
+                            openModal(data.attacker ? data.attacker.name : data.name);
                           }}
                         >
                           {data.attacker ? data.attacker.name : data.name}
@@ -636,12 +644,15 @@ const PlayerInfo = () => {
                         <button
                           className="buttonlink"
                           onClick={() => {
-                            openModal();
+                            setSeasonDataPlayer(
+                              data.attacker ? data.attacker.name : data.name
+                            );
                             setAttackerArray(
                               data.victim
                                 ? data.victim.name
                                 : data.attacker.name
                             );
+                            openModal(data.attacker ? data.attacker.name : data.name);
                           }}
                         >
                           {data.victim ? data.victim.name : data.attacker.name}

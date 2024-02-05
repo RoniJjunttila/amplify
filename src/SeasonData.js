@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
+import "./SeasonData.css";
 
 const apiKey =
   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZTZhMjM4MC01YjkwLTAxM2ItOTg2Ny0wMzFhMzJiYjRkNTMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjcwNzY5OTUxLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6Im5pZ2hib3Qtc3RhdHMifQ.PubdgdyNbB2i6GZfpNQO8zflo050se4cNvpOGM2VxIE "; // Insert your PUBG API key here
-const seasonId = "division.bro.official.pc-2018-26";
-
+const seasonId = "division.bro.official.pc-2018-27";
 
 //Season data
 
@@ -13,8 +13,13 @@ const headers = {
 };
 
 const SeasonData = () => {
-const playerNames = ["E1_Duderino", "MunatonEpaemies","HlGHLANDER","bold_moves_bob"]; 
-const [name, setName] = useState("");
+  const playerNames = [
+    "E1_Duderino",
+    "keken_viikset",
+    "HlGHLANDER",
+    "bold_moves_bob",
+  ];
+  const [name, setName] = useState("");
 
   async function fetchData(url) {
     try {
@@ -44,7 +49,8 @@ const [name, setName] = useState("");
       heals: playerData.attributes.gameModeStats["squad-fpp"].heals,
       killPoints: playerData.attributes.gameModeStats["squad-fpp"].killPoints,
       kills: playerData.attributes.gameModeStats["squad-fpp"].kills,
-      longestKill: playerData.attributes.gameModeStats["squad-fpp"].longestKill + " m",
+      longestKill:
+        playerData.attributes.gameModeStats["squad-fpp"].longestKill + " m",
       longestTimeSurvived:
         playerData.attributes.gameModeStats["squad-fpp"].longestTimeSurvived,
       losses: playerData.attributes.gameModeStats["squad-fpp"].losses,
@@ -57,7 +63,8 @@ const [name, setName] = useState("");
         playerData.attributes.gameModeStats["squad-fpp"].rankPointsTitle,
       revives: playerData.attributes.gameModeStats["squad-fpp"].revives,
       rideDistance:
-        playerData.attributes.gameModeStats["squad-fpp"].rideDistance / 1000 + " km",
+        playerData.attributes.gameModeStats["squad-fpp"].rideDistance / 1000 +
+        " km",
       roadKills: playerData.attributes.gameModeStats["squad-fpp"].roadKills,
       roundMostKills:
         playerData.attributes.gameModeStats["squad-fpp"].roundMostKills,
@@ -73,7 +80,8 @@ const [name, setName] = useState("");
       vehicleDestroys:
         playerData.attributes.gameModeStats["squad-fpp"].vehicleDestroys,
       walkDistance:
-        playerData.attributes.gameModeStats["squad-fpp"].walkDistance / 1000 + " km",
+        playerData.attributes.gameModeStats["squad-fpp"].walkDistance / 1000 +
+        " km",
       weaponsAcquired:
         playerData.attributes.gameModeStats["squad-fpp"].weaponsAcquired,
       weeklyKills: playerData.attributes.gameModeStats["squad-fpp"].weeklyKills,
@@ -82,7 +90,7 @@ const [name, setName] = useState("");
       wins: playerData.attributes.gameModeStats["squad-fpp"].wins,
     };
 
-   // stats.kdRatio = stats.kills / (stats.winPlace === 0 ? 1 : stats.winPlace);
+    // stats.kdRatio = stats.kills / (stats.winPlace === 0 ? 1 : stats.winPlace);
     return stats;
   }
 
@@ -125,7 +133,7 @@ const [name, setName] = useState("");
       const calculatedStats = playerStatsData.map((playerData) => {
         const stats = calculateStats(playerData);
         // Return the relevant data for your React component state
-        console.log(playerData)
+        console.log(playerData);
         return {
           playerName: playerData.attributes.name,
           stats: stats,
@@ -141,24 +149,28 @@ const [name, setName] = useState("");
 
   return (
     <div>
-    <h2>Season data</h2>
-    <ul>
-      {playerStats.map((player, index) => (
-        <li key={index} style={{ border: "1px solid #ccc", padding: "10px" }}>
-          <ul>
-            <li style={{ fontWeight: "bold", fontSize: "1.2em" }}>
-              {playerNames[index]}
+      <div>
+        <h2>Season data</h2>
+      </div>
+      <div className="player-stats-container">
+        <ul>
+          {playerStats.map((player, index) => (
+            <li key={index} className="player-stats">
+              <ul>
+                <li style={{ fontWeight: "bold", fontSize: "1.2em" }}>
+                  {playerNames[index]}
+                </li>
+                {Object.entries(player.stats).map(([statName, statValue]) => (
+                  <li key={statName}>
+                    {statName}: {statValue}
+                  </li>
+                ))}
+              </ul>
             </li>
-            {Object.entries(player.stats).map(([statName, statValue]) => (
-              <li key={statName}>
-                {statName}: {statValue}
-              </li>
-            ))}
-          </ul>
-        </li>
-      ))}
-    </ul>
-  </div>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 };
 export default SeasonData;

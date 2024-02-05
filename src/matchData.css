@@ -1,0 +1,55 @@
+/* matchData.css */
+
+  .ranking {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .ranking th, .ranking td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .buttonlink {
+    background: none;
+    border: none;
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+
+  .datatable table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-right: 85px;
+  }
+  
+  .datatable caption {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .datatable th, .datatable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .buttonlink {
+    background: none;
+    border: none;
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+.selector {
+    display: flex;
+}
+  
+.selector-item {
+    margin-right: 50px; /* Adjust the value based on your spacing preference */
+}

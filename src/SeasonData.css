@@ -1,0 +1,42 @@
+/* SeasonData.css */
+
+h2 {
+    color: #333; /* Set the heading color */
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  
+  li > ul {
+    padding-left: 20px;
+  }
+  
+  li > ul > li {
+    padding: 5px;
+  }
+  
+  li > ul > li:first-child {
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+  
+  li > ul > li:not(:first-child) {
+    border-top: 1px solid #ccc; /* Add a border between stats */
+  }
+  
+  /* Add more styles as needed */
+  .player-stats-container {
+    display: flex;
+  }
+  
+  /* Style for each individual player stats */
+  .player-stats {
+    display: inline-block;
+    margin-right: 20px; /* Adjust the value based on your spacing preference */
+  }

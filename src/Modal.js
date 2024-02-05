@@ -14,7 +14,7 @@ function mathRound(num) {
 
 const apiKey =
   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZTZhMjM4MC01YjkwLTAxM2ItOTg2Ny0wMzFhMzJiYjRkNTMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjcwNzY5OTUxLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6Im5pZ2hib3Qtc3RhdHMifQ.PubdgdyNbB2i6GZfpNQO8zflo050se4cNvpOGM2VxIE "; // Insert your PUBG API key here
-const seasonId = "division.bro.official.pc-2018-26";
+const seasonId = "division.bro.official.pc-2018-27";
 
 const headers = {
   accept: "application/vnd.api+json",
@@ -94,6 +94,7 @@ const [name, setName] = useState("");
   const [playerStats, setPlayerStats] = useState([]);
 
   useEffect(() => {
+    console.log("paskaaa" + content)
     const fetchDataAndCalculateStats = async () => {
       let playerIds = "";
       for (let i = 0; i < playerNames.length; i++) {
@@ -137,7 +138,7 @@ const [name, setName] = useState("");
     };
 
     fetchDataAndCalculateStats();
-  }, []); 
+  }, [content]); 
 
   return (
     <Modal
