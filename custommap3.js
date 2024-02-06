@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Image as KonvaImage, Line } from 'react-konva';
+
 
 const CustomMap = () => {
   const [scale, setScale] = useState(1);
@@ -20,8 +20,6 @@ const CustomMap = () => {
   const [selectedGame, setSeletedGame] = useState(0);
   const [selectedPlayer, setSeletedPlayer] = useState(0);
   const [attackerArray, setAttackerArray] = useState([]);
-  const [lineColors, setLineColors] = useState({});
-  const [selectedUsers, setSelectedUsers] = useState([]);
   const playerNames = [
     "E1_Duderino",
     "keken_viikset",
@@ -114,10 +112,7 @@ const CustomMap = () => {
               (participant) => participant.type === "participant"
             )
           );
-        console.log(  participants
-          .filter((item) => item.attributes.stats) 
-          .map((item) => item.attributes.stats.name) // Map to get only the names
-          );
+          console.log(participants)
 
           participants.forEach((participant) => {
             rostersWithParticipants.forEach((roster) => {
@@ -153,40 +148,31 @@ const CustomMap = () => {
             },
           });
          
+
           const telemetryData = await telemetryResponse.json();
-      
-          const characterNames = participants
-            .filter((item) => item.attributes.stats) 
-            .map((item) => item.attributes.stats.name);
           
-          const allCharacterLocations = [];
-          
-          characterNames.forEach((characterName) => {
-            const characterEvents = telemetryData.filter((event) => {
-              return event.character && event.character.name === characterName;
-            });
-          
-            const characterLocations = characterEvents.map((event) => {
-              const { location } = event.character;
-              return { location };
-            });
-          
-            allCharacterLocations.push({
-              characterName,
-              characterLocations,
-            });
+
+          // Filter events of type "LogItemPickup" and having character information
+          const characterName = "E1_Duderino";
+
+          const characterEvents = telemetryData.filter((event) => {
+            return event.character && event.character.name === characterName;
           });
+
+          // Extract location data under each character
+          const characterLocations = characterEvents.map((event) => {
+            const { location } = event.character;
+            return { location };
+          });
+
+         // console.log(characterLocations);
+          const convertedPoints = characterLocations.flatMap((location) => [
+            location.location.x / 427,
+            location.location.y / 427,
+          ]);
           
-          const convertedPoints = allCharacterLocations.map((character) => ({
-            userName: character.characterName,
-            points: character.characterLocations.slice(10).flatMap((location) => [
-              location.location.x / 427,
-              location.location.y / 427,
-            ]),
-          }));
-          
-          setLines([...lines, ...convertedPoints]);
-          
+          setLines([...lines, { points: convertedPoints}])
+
           const searchValue = "LogMatchStart";
           const result = telemetryData.filter(
             (item) => item._T === searchValue
@@ -297,29 +283,6 @@ const CustomMap = () => {
     });
   };
 
-  const handleCheckboxChange = (name, checked) => {
-    if (checked) {
-      // Add user to the selected list
-      setSelectedUsers([...selectedUsers, name]);
-
-      // Generate a random color for the user
-      const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
-      setLineColors({
-        ...lineColors,
-        [name]: randomColor,
-      });
-    } else {
-      // Remove user from the selected list
-      const updatedUsers = selectedUsers.filter(user => user !== name);
-      setSelectedUsers(updatedUsers);
-
-      // Remove the color for the user
-      const { [name]: removedColor, ...updatedColors } = lineColors;
-      setLineColors(updatedColors);
-    }
-  };
-
-
   return (
 <div style={{display: "flex"}}>
   <div>
@@ -333,7 +296,7 @@ const CustomMap = () => {
               </tr>
             </thead>
             <tbody>
-              {matchData && matchData.included &&
+              {matchData.included &&
                 matchData.included
                   .filter((participant) => participant.attributes.stats)
                   .sort((a, b) => {
@@ -416,21 +379,11 @@ const CustomMap = () => {
                                       player.name === "HlGHLANDER" ||
                                       player.name === "bold_moves_bob" ? (
                                         <td style={{ fontWeight: "bold" }}>
-                                          <input
-                                type="checkbox"
-                                id="select"
-                                onChange={(e) => handleCheckboxChange(player.name, e.target.checked)}
-                                checked={selectedUsers.includes(player.name)}
-                              /> {player.name}
+                                          <input type="checkbox" id="select" /> {player.name}
                                         </td>
                                       ) : (
                                         <td>
-                                        <input
-                                type="checkbox"
-                                id="select"
-                                onChange={(e) => handleCheckboxChange(player.name, e.target.checked)}
-                                checked={selectedUsers.includes(player.name)}
-                              />{player.name ? (
+                                         <input type="checkbox" id="select" /> {player.name ? (
                                             <span
                                             >
                                               {player.name}
@@ -468,6 +421,7 @@ const CustomMap = () => {
   >
 
     <Layer>
+      {/* Use the KonvaImage component for the custom tile layer */}
       {mapImage && (
         <KonvaImage
           image={mapImage}
@@ -476,14 +430,25 @@ const CustomMap = () => {
         />
       )}
 
-        {matchData && lines.map((line, index) => (
-  <Line
-    key={index}
-    points={line.points}
-    stroke={line.userName ? lineColors[line.userName] || "transparent" : "black"}
-    tension={0.05}
-  />
-))}
+      {/* Add the marker with the custom icon */}
+      {markerImage && (
+        <KonvaImage
+          image={markerImage}
+          width={32}
+          height={32}
+          x={979632.25 / scale - offset.x}
+          y={447521.59375 / scale - offset.y}
+        />
+      )}
+        {/* Render drawing lines */}
+        {lines.map((line, index) => (
+          <Line
+            key={index}
+            points={line.points}
+            stroke="black"
+            tension={.05}
+          />
+        ))}
       </Layer>
   </Stage>
 </div>

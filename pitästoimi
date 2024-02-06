@@ -114,10 +114,7 @@ const CustomMap = () => {
               (participant) => participant.type === "participant"
             )
           );
-        console.log(  participants
-          .filter((item) => item.attributes.stats) 
-          .map((item) => item.attributes.stats.name) // Map to get only the names
-          );
+          console.log(participants)
 
           participants.forEach((participant) => {
             rostersWithParticipants.forEach((roster) => {
@@ -153,11 +150,17 @@ const CustomMap = () => {
             },
           });
          
+
           const telemetryData = await telemetryResponse.json();
-      
-          const characterNames = participants
-            .filter((item) => item.attributes.stats) 
-            .map((item) => item.attributes.stats.name);
+          
+
+          // Filter events of type "LogItemPickup" and having character information
+          const characterNames = [
+            "E1_Duderino",
+            "keken_viikset",
+            "HlGHLANDER",
+            "bold_moves_bob",
+          ];
           
           const allCharacterLocations = [];
           
@@ -176,16 +179,16 @@ const CustomMap = () => {
               characterLocations,
             });
           });
-          
+                    
           const convertedPoints = allCharacterLocations.map((character) => ({
             userName: character.characterName,
-            points: character.characterLocations.slice(10).flatMap((location) => [
+            points: character.characterLocations.flatMap((location) => [
               location.location.x / 427,
               location.location.y / 427,
             ]),
           }));
           
-          setLines([...lines, ...convertedPoints]);
+          setLines([...lines, ...convertedPoints.slice(50)]);
           
           const searchValue = "LogMatchStart";
           const result = telemetryData.filter(
@@ -468,6 +471,7 @@ const CustomMap = () => {
   >
 
     <Layer>
+      {/* Use the KonvaImage component for the custom tile layer */}
       {mapImage && (
         <KonvaImage
           image={mapImage}
@@ -476,11 +480,22 @@ const CustomMap = () => {
         />
       )}
 
+      {/* Add the marker with the custom icon */}
+      {markerImage && (
+        <KonvaImage
+          image={markerImage}
+          width={32}
+          height={32}
+          x={979632.25 / scale - offset.x}
+          y={447521.59375 / scale - offset.y}
+        />
+      )}
+        {/* Render drawing lines */}
         {matchData && lines.map((line, index) => (
   <Line
     key={index}
     points={line.points}
-    stroke={line.userName ? lineColors[line.userName] || "transparent" : "black"}
+    stroke={line.userName ? lineColors[line.userName] || "red" : "black"}
     tension={0.05}
   />
 ))}
