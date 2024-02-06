@@ -94,7 +94,7 @@ const [name, setName] = useState("");
   const [playerStats, setPlayerStats] = useState([]);
 
   useEffect(() => {
-    console.log("paskaaa" + content)
+  
     const fetchDataAndCalculateStats = async () => {
       let playerIds = "";
       for (let i = 0; i < playerNames.length; i++) {
@@ -141,34 +141,45 @@ const [name, setName] = useState("");
   }, [content]); 
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={closeModal}
-      contentLabel="Example Modal"
-    >
-      <div>
-        <button onClick={closeModal}>Close</button>
-        <div>
-    <h2>Season data</h2>
-    <ul>
-      {playerStats.map((player, index) => (
-        <li key={index}>
-          <ul>
-            <li style={{ fontWeight: "bold", fontSize: "1.2em" }}>
-              {playerNames[index]}
-            </li>
-            {Object.entries(player.stats).map(([statName, statValue]) => (
-              <li key={statName}>
-                {statName}: {statValue}
+<Modal
+  isOpen={isOpen}
+  onRequestClose={closeModal}
+  contentLabel="Example Modal"
+  style={{
+    overlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    },
+    content: {
+      width: '60%', 
+      margin: 'auto', 
+      borderRadius: '10px', 
+      padding: '20px', 
+    },
+  }}
+>
+  <div style={{ maxHeight: '100%', overflowY: 'auto' }}>
+    <div>
+      <h2>Season data</h2>
+      <ul>
+        {playerStats.map((player, index) => (
+          <li key={index}>
+            <ul>
+              <li style={{ fontWeight: "bold", fontSize: "1.2em" }}>
+                {playerNames[index]}
               </li>
-            ))}
-          </ul>
-        </li>
-      ))}
-    </ul>
+              {Object.entries(player.stats).map(([statName, statValue]) => (
+                <li key={statName}>
+                  {statName}: {statValue}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
-      </div>
-    </Modal>
+</Modal>
+
   );
 };
 
