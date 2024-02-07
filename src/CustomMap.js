@@ -371,7 +371,7 @@ const CustomMap = () => {
       </div>
 
       <div style={{ display: "flex" }}>
-      <div className="statstable" style={{ maxHeight: '750px', overflowY: 'auto' }}>
+      <div className="statstable" style={{ height: '750px', overflowY: 'auto' }}>
           <table className="ranking">
             <thead>
               <tr>
