@@ -1,19 +1,23 @@
-
-import React, { useState, useEffect, useRef } from 'react';
-import { Stage, Layer, Image as KonvaImage, Line } from 'react-konva';
+import React, { useState, useEffect, useRef } from "react";
+import { Stage, Layer, Image as KonvaImage, Line } from "react-konva";
+import './CustomMap.css'
 
 const CustomMap = () => {
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0.35);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [mapImage, setMapImage] = useState(null);
   const [markerImage, setMarkerImage] = useState(null);
   const [lines, setLines] = useState([]);
   const [drawing, setDrawing] = useState(false);
 
+  //on click return background color for item
+  //damagettajat
+  //toi nimi lista ois oma scroller
+
   const PUBG_API_KEY =
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZTZhMjM4MC01YjkwLTAxM2ItOTg2Ny0wMzFhMzJiYjRkNTMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjcwNzY5OTUxLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6Im5pZ2hib3Qtc3RhdHMifQ.PubdgdyNbB2i6GZfpNQO8zflo050se4cNvpOGM2VxIE ";
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2ZTZhMjM4MC01YjkwLTAxM2ItOTg2Ny0wMzFhMzJiYjRkNTMiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNjcwNzY5OTUxLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6Im5pZ2hib3Qtc3RhdHMifQ.PubdgdyNbB2i6GZfpNQO8zflo050se4cNvpOGM2VxIE ";
   const PUBG_API_KEY_2 =
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzZTU2YTQ0MC03ZTNlLTAxM2MtMmZlYy0zZTQ5OWY3OWEzZGEiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNzAyNzMwNDQwLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InByaXZhdGUtdXNlLXN0In0.mx__XYP8I1wTPR2JbKIUbccutTyHL0nX8USCGjMp3_8";
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzZTU2YTQ0MC03ZTNlLTAxM2MtMmZlYy0zZTQ5OWY3OWEzZGEiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNzAyNzMwNDQwLCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InByaXZhdGUtdXNlLXN0In0.mx__XYP8I1wTPR2JbKIUbccutTyHL0nX8USCGjMp3_8";
   const [playerData, setPlayerData] = useState(null);
   const [matchesArray, setMatchesArray] = useState([]);
   const [matchData, setMatchData] = useState(null);
@@ -50,7 +54,7 @@ const CustomMap = () => {
   const [SeasonDataPlayer, setSeasonDataPlayer] = useState("");
   const [location, setLocation] = useState({});
   const openModal = (val) => {
-    setSeasonDataPlayer(val)
+    setSeasonDataPlayer(val);
     setModalIsOpen(true);
   };
 
@@ -101,7 +105,7 @@ const CustomMap = () => {
 
           const matchData = await matchResponse.json();
           setMatchData(matchData);
-     //     console.log(matchData);
+          //     console.log(matchData);
           const rosters = matchData.included.filter(
             (item) => item.type === "roster"
           );
@@ -114,9 +118,10 @@ const CustomMap = () => {
               (participant) => participant.type === "participant"
             )
           );
-        console.log(  participants
-          .filter((item) => item.attributes.stats) 
-          .map((item) => item.attributes.stats.name) // Map to get only the names
+          console.log(
+            participants
+              .filter((item) => item.attributes.stats)
+              .map((item) => item.attributes.stats.name) // Map to get only the names
           );
 
           participants.forEach((participant) => {
@@ -130,7 +135,7 @@ const CustomMap = () => {
                   roster.attributes.stats.rank;
                 participant.attributes.stats.teamId =
                   roster.attributes.stats.teamId;
-              //console.log("Player:", participant.attributes.stats, "Team:", roster.attributes.stats);
+                //console.log("Player:", participant.attributes.stats, "Team:", roster.attributes.stats);
               }
             });
           });
@@ -139,10 +144,10 @@ const CustomMap = () => {
             (item) => item.type !== "roster"
           );
 
-         // console.log(matchData);
+          // console.log(matchData);
 
           const telemetryId = matchData.data.relationships.assets.data[0].id;
-         
+
           const telemetryURL = matchData.included.find(
             (item) => item.type === "asset" && item.id === telemetryId
           ).attributes.URL;
@@ -152,47 +157,52 @@ const CustomMap = () => {
               "Accept-Encoding": "gzip",
             },
           });
-         
+
           const telemetryData = await telemetryResponse.json();
-      
-          const characterNames = participants
-            .filter((item) => item.attributes.stats) 
-            .map((item) => item.attributes.stats.name);
-          
-          const allCharacterLocations = [];
-          
-          characterNames.forEach((characterName) => {
-            const characterEvents = telemetryData.filter((event) => {
-              return event.character && event.character.name === characterName;
-            });
-          
-            const characterLocations = characterEvents.map((event) => {
-              const { location } = event.character;
-              return { location };
-            });
-          
-            allCharacterLocations.push({
-              characterName,
-              characterLocations,
-            });
-          });
-          
-          const convertedPoints = allCharacterLocations.map((character) => ({
-            userName: character.characterName,
-            points: character.characterLocations.slice(10).flatMap((location) => [
-              location.location.x / 427,
-              location.location.y / 427,
-            ]),
-          }));
-          
-          setLines([...lines, ...convertedPoints]);
-          
+
           const searchValue = "LogMatchStart";
           const result = telemetryData.filter(
             (item) => item._T === searchValue
           );
           setCurrentMapName(mapNames[result[0].mapName]);
-          
+
+          const characterNames = participants
+            .filter((item) => item.attributes.stats)
+            .map((item) => item.attributes.stats.name);
+
+          const allCharacterLocations = [];
+
+          characterNames.forEach((characterName) => {
+            const characterEvents = telemetryData.filter((event) => {
+              return event.character && event.character.name === characterName;
+            });
+
+            const characterLocations = characterEvents.map((event) => {
+              const { location } = event.character;
+              return { location };
+            });
+
+            allCharacterLocations.push({
+              characterName,
+              characterLocations,
+            });
+          });
+
+          const convertedPoints = allCharacterLocations.map((character) => {
+            const divisor = currentMapName === "erangel" ? 427 : 420;
+
+            return {
+              userName: character.characterName,
+              points: character.characterLocations
+                .slice(10)
+                .flatMap((location) => [
+                  location.location.x / divisor,
+                  location.location.y / divisor,
+                ]),
+            };
+          });
+          setLines([...lines, ...convertedPoints]);
+
           const attackerEvents = telemetryData.filter((event) => {
             return (
               event._T === "LogPlayerTakeDamage" &&
@@ -259,21 +269,29 @@ const CustomMap = () => {
 
     fetchMatchData();
   }, [matchesArray, selectedGame, selectedPlayer]);
-  
 
   useEffect(() => {
- 
     const loadImages = async () => {
+      setLines([]);
       const loadMapImage = new Promise((resolve) => {
         const img = new window.Image();
         img.onload = () => resolve(img);
-        img.src = 'https://i.imgur.com/QZazUv6.jpg';
+        console.log(currentMapName);
+        if (currentMapName === "Miramar") {
+          img.src = "https://i.imgur.com/1AeOdVx.jpg";
+        } else if (currentMapName === "Erangel") {
+          img.src = "https://i.imgur.com/QZazUv6.jpg";
+        } else if (currentMapName === "Deston") {
+          img.src = "https://i.imgur.com/rSY84vT.jpg";
+        } else {
+          return <p>Support for only erangel, miramar and deston</p>;
+        }
       });
 
       const loadMarkerImage = new Promise((resolve) => {
-        const img = new window.Image();
+        /*         const img = new window.Image();
         img.onload = () => resolve(img);
-        img.src = 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Color-blue.JPG';
+        img.src = ''; */
       });
 
       setMapImage(await loadMapImage);
@@ -281,7 +299,7 @@ const CustomMap = () => {
     };
 
     loadImages();
-  }, []);
+  }, [currentMapName]);
 
   const handleWheel = (e) => {
     e.evt.preventDefault();
@@ -303,14 +321,16 @@ const CustomMap = () => {
       setSelectedUsers([...selectedUsers, name]);
 
       // Generate a random color for the user
-      const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+      const randomColor = `#${Math.floor(Math.random() * 16777215).toString(
+        16
+      )}`;
       setLineColors({
         ...lineColors,
         [name]: randomColor,
       });
     } else {
       // Remove user from the selected list
-      const updatedUsers = selectedUsers.filter(user => user !== name);
+      const updatedUsers = selectedUsers.filter((user) => user !== name);
       setSelectedUsers(updatedUsers);
 
       // Remove the color for the user
@@ -319,12 +339,40 @@ const CustomMap = () => {
     }
   };
 
-
   return (
-<div style={{display: "flex"}}>
-  <div>
-  <table className="ranking">
-            <caption>Ranking:</caption>
+    <div className="map-content">
+      <div className="selector">
+        <div className="selector-item">
+          <label>
+            Map: {currentMapName}
+            <br></br>
+          </label>
+        </div>
+        <div className="selector-item">
+          <label>Games:</label>
+          <select onChange={(event) => setSeletedGame(event.target.value)}>
+            {matchesArray.map((key, id) => (
+              <option key={id} value={id}>
+                {key}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="selector-item">
+          <label>Player: </label>
+          <select onChange={(event) => setSeletedPlayer(event.target.value)}>
+            {playerNames.map((key, id) => (
+              <option key={key} value={id}>
+                {key}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div style={{ display: "flex" }}>
+      <div className="statstable" style={{ maxHeight: '750px', overflowY: 'auto' }}>
+          <table className="ranking">
             <thead>
               <tr>
                 <th>Name</th>
@@ -333,7 +381,8 @@ const CustomMap = () => {
               </tr>
             </thead>
             <tbody>
-              {matchData && matchData.included &&
+              {matchData &&
+                matchData.included &&
                 matchData.included
                   .filter((participant) => participant.attributes.stats)
                   .sort((a, b) => {
@@ -405,36 +454,71 @@ const CustomMap = () => {
                                   <React.Fragment>
                                     {teamIdChanged && (
                                       <tr>
-                                        <td style={{textAlign: "center"}} colSpan="1">
+                                        <td
+                                          style={{ textAlign: "center" }}
+                                          colSpan="1"
+                                        >
                                           Team {currentTeamId}
                                         </td>
                                       </tr>
-                                    )} 
+                                    )}
                                     <tr>
                                       {player.name === "E1_Duderino" ||
                                       player.name === "keken_viikset" ||
                                       player.name === "HlGHLANDER" ||
                                       player.name === "bold_moves_bob" ? (
-                                        <td style={{ fontWeight: "bold" }}>
+                                        <td
+                                          style={{
+                                            fontWeight: "bold",
+                                            backgroundColor:
+                                              selectedUsers.includes(
+                                                player.name
+                                              )
+                                                ? lineColors[player.name]
+                                                : "white",
+                                          }}
+                                        >
                                           <input
-                                type="checkbox"
-                                id="select"
-                                onChange={(e) => handleCheckboxChange(player.name, e.target.checked)}
-                                checked={selectedUsers.includes(player.name)}
-                              /> {player.name}
+                                            type="checkbox"
+                                            id="select"
+                                            onChange={(e) =>
+                                              handleCheckboxChange(
+                                                player.name,
+                                                e.target.checked
+                                              )
+                                            }
+                                            checked={selectedUsers.includes(
+                                              player.name
+                                            )}
+                                          />{" "}
+                                          {player.name}
                                         </td>
                                       ) : (
-                                        <td>
-                                        <input
-                                type="checkbox"
-                                id="select"
-                                onChange={(e) => handleCheckboxChange(player.name, e.target.checked)}
-                                checked={selectedUsers.includes(player.name)}
-                              />{player.name ? (
-                                            <span
-                                            >
-                                              {player.name}
-                                            </span>
+                                        <td
+                                          style={{
+                                            backgroundColor:
+                                              selectedUsers.includes(
+                                                player.name
+                                              )
+                                                ? lineColors[player.name]
+                                                : "white",
+                                          }}
+                                        >
+                                          <input
+                                            type="checkbox"
+                                            id="select"
+                                            onChange={(e) =>
+                                              handleCheckboxChange(
+                                                player.name,
+                                                e.target.checked
+                                              )
+                                            }
+                                            checked={selectedUsers.includes(
+                                              player.name
+                                            )}
+                                          />
+                                          {player.name ? (
+                                            <span>{player.name}</span>
                                           ) : (
                                             ""
                                           )}
@@ -454,40 +538,45 @@ const CustomMap = () => {
                   })}
             </tbody>
           </table>
-  </div>
-<Stage
-    width={window.innerWidth}
-    height={window.innerHeight}
-    draggable
-    scaleX={scale}
-    scaleY={scale}
-    x={offset.x}
-    y={offset.y}
-    onWheel={handleWheel}
-    onDragMove={handleDragMove}
-  >
-
-    <Layer>
-      {mapImage && (
-        <KonvaImage
-          image={mapImage}
+        </div>
+        <Stage
+        style={{width: "50%"}}
           width={window.innerWidth}
-          height={window.innerWidth} // Set height to match the width
-        />
-      )}
+          height={window.innerHeight}
+          draggable
+          scaleX={scale}
+          scaleY={scale}
+          x={offset.x}
+          y={offset.y}
+          onWheel={handleWheel}
+          onDragMove={handleDragMove}
+        >
+          <Layer>
+            {mapImage && (
+              <KonvaImage
+                image={mapImage}
+                width={window.innerWidth}
+                height={window.innerWidth} // Set height to match the width
+              />
+            )}
 
-        {matchData && lines.map((line, index) => (
-  <Line
-    key={index}
-    points={line.points}
-    stroke={line.userName ? lineColors[line.userName] || "transparent" : "black"}
-    tension={0.05}
-  />
-))}
-      </Layer>
-  </Stage>
-</div>
-  
+            {matchData &&
+              lines.map((line, index) => (
+                <Line
+                  key={index}
+                  points={line.points}
+                  stroke={
+                    line.userName
+                      ? lineColors[line.userName] || "transparent"
+                      : "black"
+                  }
+                  tension={0.05}
+                />
+              ))}
+          </Layer>
+        </Stage>
+      </div>
+    </div>
   );
 };
 
